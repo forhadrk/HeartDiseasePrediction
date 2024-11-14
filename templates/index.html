@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction</title>
+    <!-- Bootstrap CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+
+    <script>
+        function makePrediction() {
+            var predYes = "Elevated risk of heart disease detected. Please consult your healthcare provider for further assessment.";
+            var predNo = "No significant risk of heart disease found. Maintain regular check-ups for continued health monitoring.";
+            // Create an empty array to store input data
+            const inputData = {
+                'input': []
+            };
+
+            // Loop through each input field (from input1 to input13) and get the value
+            for (let i = 1; i <= 13; i++) {
+                // Get the value of each input field and push it to the inputData array
+                const value = parseFloat(document.getElementById('input' + i).value) || 0; // Default to 0 if empty
+                inputData.input.push(value);
+            }
+
+            // Log the inputData array to the console (for debugging purposes)
+            console.log(inputData);
+            // Send the data to the Flask backend
+            fetch('http://127.0.0.1:5000/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(inputData)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // Display the prediction result
+                    console.log(data.prediction);
+                    // console.log(data.prediction[0][0]);
+                    _output = data.prediction[0][0];
+                    if (parseFloat(_output) > 0.5){
+                        document.getElementById('result').innerHTML = predYes;
+                        document.getElementById('result').classList.add("hasError");
+                    }
+                    else
+                        document.getElementById('result').innerHTML = predNo;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+
+        function clearform() {
+            document.querySelectorAll(".txt").forEach(element => {
+                element.value = "";
+            });
+
+            document.querySelectorAll(".ddl").forEach(element => {
+                element.value = "0";
+            });
+        }
+
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="d-flex flex-column flex-md-row align-items-center pb-3 mb-4 mt-3 border-bottom">
+                <a href="/" class="d-flex align-items-center text-dark text-decoration-none">
+                    <img src="https://www.institutedata.com/wp-content/uploads/2020/05/iod_h_tp_primary_c.png"
+                        class="logoimg logo-dark entered lazyloaded" alt="Institute of Data"
+                        data-lazy-src="https://www.institutedata.com/wp-content/uploads/2020/05/iod_h_tp_primary_c.png"
+                        data-ll-status="loaded">
+                </a>
+                <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
+                    <a class="me-3 py-2 text-dark text-decoration-none" href="#"
+                        style="font-weight: 600;font-size: 20pt;"><i class="bi bi-person-circle"></i> Forhad Hossain</a>
+                </nav>
+            </div>
+
+            <div class="pricing-header p-3 pb-md-4 mx-auto text-center">
+                <h1 class="display-4 fw-normal"  style="font-family: math;font-size: 1.8rem !important;">Heart Disease Prediction</h1>               
+                <!-- <p class="fs-5 text-muted" style="font-family: monospace;font-size: 1.5rem !important;">Heart Disease Model Prediction</p> -->
+            </div>
+        </header>
+        
+    </div>
+    
+    <div class="container mt-2">
+        <div class="card">
+            <div class="card-body">
+                <form id="predictionForm">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="input1" class="form-label">Patient Age</label>
+                            <input type="number" id="input1" class="form-control txt" min="1"
+                                placeholder="Enter Patient Age" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="input2" class="form-label">Gender</label>
+                            <select id="input2" class="form-control ddl">
+                                <option value="0">0 - Female</option>
+                                <option value="1">1 - Male</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="input3" class="form-label">Chest Pain Type</label>
+                            <select id="input3" class="form-control ddl">
+                                <option value="0">0 - Low</option>
+                                <option value="1">1 - Normal</option>
+                                <option value="1">2 - Medium</option>
+                                <option value="2">3 - High</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="input4" class="form-label">Resting Blood Pressure(mm Hg)</label>
+                            <input type="number" id="input4" class="form-control txt" min="1" placeholder="Enter number"
+                                required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="input5" class="form-label">Cholesterol Level(mg/dl)</label>
+                            <input type="number" id="input5" class="form-control txt" min="1" placeholder="Enter number"
+                                required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="input6" class="form-label">Fasting Blood Sugar(>120 mg/dl)</label>
+                            <select id="input6" class="form-control ddl">
+                                <option value="0">0 - No</option>
+                                <option value="1">1 - Yes</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="input7" class="form-label">Resting Electro Ccardiographic</label>
+                            <select id="input7" class="form-control ddl">
+                                <option value="0">0 - Normal</option>
+                                <option value="1">1 - Having ST-T Wave Abnormality</option>
+                                <option value="2">2 - Other Abnormalities</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="input8" class="form-label">Heart Rate(Max)</label>
+                            <input type="number" id="input8" class="form-control txt" min="1"
+                                placeholder="Enter Maximum heart rate achieved" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="input9" class="form-label"> Exercise Induced Angina</label>
+                            <select id="input9" class="form-control ddl">
+                                <option value="0">0 - No</option>
+                                <option value="1">1 - Yes</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="input10" class="form-label">Depression Induced</label>
+                            <input type="number" id="input10" class="form-control txt" min="1"
+                                placeholder="Enter number for DI by exercise relative to rest" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="input11" class="form-label">Slope of the Peak Exercise</label>
+                            <input type="number" id="input11" class="form-control txt" min="1"
+                                placeholder="Enter number for peak exercise ST segment" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="input12" class="form-label">Major Vessels Colored By Fluoroscopy</label>
+                            <select id="input12" class="form-select ddl">
+                                <option value="0">0 - No major vessels colored</option>
+                                <option value="1">1 - One major vessel colored</option>
+                                <option value="2">2 - Two major vessels colored</option>
+                                <option value="3">3 - Three major vessels colored</option>
+                                <option value="4">4 - Four major vessels colored</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="input13" class="form-label">Thalassemia</label>
+                            <select id="input13" class="form-control ddl">
+                                <option value="0">0 - Normal</option>
+                                <option value="1">1 - Thalassemia Minor</option>
+                                <option value="2">2 - Thalassemia Major</option>
+                                <option value="3">3 - Thalassemia Intermediate</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Prediction Button -->
+        <div class="text-left pt-3">
+            <button onclick="makePrediction()" class="btn btn-primary">Make Prediction</button>
+            <button onclick="clearform()" class="btn btn-success">Clear</button>
+        </div>
+
+        <!-- Display the result here -->
+        <p id="result" class="mt-3 text-center">
+
+        </p>
+    </div>   
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+    <style>
+        .logoimg {
+            width: 50%;
+        }
+
+        .form-label {
+            font-weight: 600;
+        }
+
+        .form-control {
+            line-height: 1.9 !important;
+        }
+
+        .form-control:focus {
+            outline: none;
+            /* Removes the default outline */
+            box-shadow: none;
+            /* Removes the blue shadow */
+        }
+
+        #result {
+            font-size: 1.3rem !important;
+            font-style: italic;
+        }
+        .hasError{
+            color:red;
+        }
+    </style>
+</body>
+
+</html>

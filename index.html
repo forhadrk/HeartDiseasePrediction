@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction</title>
+    <script>
+        function makePrediction() {
+            // Get input data from HTML form (replace with your own input)
+            const inputData = {
+                'input': [52, 1, 2, 172, 199, 1, 1, 162, 0, 0.5, 2, 0, 3]  // Example data (adjust as needed)
+            };
+
+            // Send the data to the Flask backend
+            fetch('http://127.0.0.1:5000/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(inputData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display the prediction result
+                document.getElementById('result').innerText = 'Prediction: ' + data.prediction;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1>Model Prediction</h1>
+    
+    <!-- Button to trigger the prediction -->
+    <button onclick="makePrediction()">Make Prediction</button>
+
+    <!-- Display the result here -->
+    <p id="result"></p>
+</body>
+</html>
